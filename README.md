@@ -1,0 +1,2 @@
+# CiefpSelectSatellite
+Satellite Selection Plugin
