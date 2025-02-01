@@ -15,7 +15,7 @@ from Screens.Screen import Screen
 from Tools.Directories import fileExists
 from enigma import eDVBDB
 
-PLUGIN_VERSION = "1.3"
+PLUGIN_VERSION = "1.4"
 PLUGIN_ICON = "plugin.png"
 PLUGIN_NAME = "CiefpSelectSatellite"
 PLUGIN_DESCRIPTION = "Satellite Selection Plugin"
@@ -149,6 +149,9 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.ciefp_19e_fta.tv',
                 'userbouquet.ciefp_19e_canaldigitaal.tv',
                 'userbouquet.ciefp_19e_canalsat.tv'
+            ],
+            '16.1E': [
+                'userbouquet.ciefp_16e_rtsh.tv',
             ],
             '16.0E': [
                 'userbouquet.ciefp_16e_eutelsat.tv',
