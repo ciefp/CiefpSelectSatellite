@@ -4,7 +4,6 @@ import sys
 import shutil
 import zipfile
 from xml.etree import ElementTree
-
 import requests
 from Components.Pixmap import Pixmap
 from Components.ActionMap import ActionMap
@@ -16,7 +15,7 @@ from Screens.Screen import Screen
 from Tools.Directories import fileExists
 from enigma import eDVBDB
 
-PLUGIN_VERSION = "1.2"
+PLUGIN_VERSION = "1.3"
 PLUGIN_ICON = "plugin.png"
 PLUGIN_NAME = "CiefpSelectSatellite"
 PLUGIN_DESCRIPTION = "Satellite Selection Plugin"
@@ -53,8 +52,7 @@ class CiefpSelectSatellite(Screen):
         self.session = session
         self.selected_satellites = []
         self.bouquet_mapping = self.create_bouquet_mapping()
-
-
+        
         # UI Components
         self["left_list"] = MenuList([])
         self["right_list"] = MenuList([])
@@ -64,24 +62,22 @@ class CiefpSelectSatellite(Screen):
         self["yellow_button"] = Label("Install")
         self["red_button"] = Label("Exit")
         self["python_version"] = Label(self.get_python_version())
-
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "DirectionActions"],
-                                    {
-                                        "ok": self.select_item,
-                                        "cancel": self.exit,
-                                        "green": self.copy_files,
-                                        "yellow": self.install,
-                                        "red": self.exit,
-                                        "up": self.up,
-                                        "down": self.down,
-                                        "left": self.switch_left,
-                                        "right": self.switch_right,
-                                    }, -1)
-
+        {
+            "ok": self.select_item,
+            "cancel": self.exit,
+            "green": self.copy_files,
+            "yellow": self.install,
+            "red": self.exit,
+            "up": self.up,
+            "down": self.down,
+            "left": self.switch_left,
+            "right": self.switch_right,
+        }, -1)
         self.download_settings()
 
     def create_bouquet_mapping(self):
-        return  {
+        return {
             '80.0E': ['userbouquet.ciefp_80e.tv'],
             '75.0E': ['userbouquet.ciefp_68e.tv'],
             '70.5E': ['userbouquet.ciefp_68e.tv'],
@@ -107,16 +103,16 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.ciefp_42e_dsmart.tv',
                 'userbouquet.ciefp_42e_tivibu.tv'
             ],
-			'39.0E': [
+            '39.0E': [
                 'userbouquet.ciefp_39e_hellas.tv',
                 'userbouquet.ciefp_39e_hellas_sport.tv',
                 'userbouquet.ciefp_39e_ert.tv',
                 'userbouquet.ciefp_39e_polaris.tv',
                 'userbouquet.ciefp_39e_dolce.tv',
                 'userbouquet.ciefp_39e_a1bg.tv'
-		    ],
+            ],
             '36.0E': ['userbouquet.ciefp_36e.tv'],
-			'31.0E': ['userbouquet.ciefp_31e.tv'],
+            '31.0E': ['userbouquet.ciefp_31e.tv'],
             '28.2E': [
                 'userbouquet.ciefp_28e_astra.tv',
                 'userbouquet.ciefp_28e_skyuk_icam.tv',
@@ -126,12 +122,12 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.ciefp_28e_skyukkids.tv',
                 'userbouquet.ciefp_28e_skyukgeneral.tv'
             ],
-			'26.0E': [
-			    'userbouquet.ciefp_26e_badr.tv',
+            '26.0E': [
+                'userbouquet.ciefp_26e_badr.tv',
                 'userbouquet.ciefp_26e_mbc.tv'
-		    ],
+            ],
             '23.5E': [
-			    'userbouquet.ciefp_23e_astra.tv',
+                'userbouquet.ciefp_23e_astra.tv',
                 'userbouquet.ciefp_23e_skylinkgeneral.tv',
                 'userbouquet.ciefp_23e_skylink.tv',
                 'userbouquet.ciefp_23e_canaldigital.tv',
@@ -165,7 +161,7 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.ciefp_16e_vipnet.tv',
                 'userbouquet.ciefp_16e_digitalbania.tv',
                 'userbouquet.ciefp_16e_freesatromania.tv'
-			],
+            ],
             '13.0E': [
                 'userbouquet.ciefp_13e_hotbird.tv',
                 'userbouquet.ciefp_13e_polandmovies.tv',
@@ -221,7 +217,7 @@ class CiefpSelectSatellite(Screen):
             '5.0W': [
                 'userbouquet.ciefp_5w_eutelsat.tv',
                 'userbouquet.ciefp_5w_rai.tv',
-                'userbouquet.ciefp_5w_france_multistream.tv'
+                'userbouquet.ciefp_5w_france_multistream.tv',
                 'userbouquet.ciefp_5w_francesat.tv',
             ],
             '7.0W': ['userbouquet.ciefp_7w.tv'],
@@ -236,7 +232,6 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.ciefp_30w_abertis.tv'
             ],
             '34.5W': ['userbouquet.ciefp_35w.tv'],
-            # Add other satellites here
             'DVBT/T2': [
                 'userbouquet.ciefp_terrestrial_fta.tv',
                 'userbouquet.ciefp_terrestrial_paytv.tv'
@@ -256,14 +251,11 @@ class CiefpSelectSatellite(Screen):
         if not fileExists(xml_path):
             self["status"].setText("Error: satellites.xml not found!")
             return
-
         try:
             with open(xml_path, 'r', encoding='iso-8859-1') as f:
                 xml_content = f.read()
-
             root = ElementTree.fromstring(xml_content)
             satellites = [sat.get('name') for sat in root.findall('sat')]
-
             # Filter satellites
             filtered_satellites = []
             for sat in satellites:
@@ -271,7 +263,6 @@ class CiefpSelectSatellite(Screen):
                     if key in sat:
                         filtered_satellites.append(sat)
                         break
-
             self["left_list"].setList(filtered_satellites)
             self["status"].setText("Satellites loaded successfully.")
         except Exception as e:
@@ -284,37 +275,30 @@ class CiefpSelectSatellite(Screen):
             response = requests.get(GITHUB_API_URL)
             response.raise_for_status()  # Raise error for bad response
             files = response.json()
-
             # Find desired ZIP file
             zip_url = None
             for file in files:
                 if any(name in file["name"] for name in STATIC_NAMES) and file["name"].endswith(".zip"):
                     zip_url = file["download_url"]
                     break
-
             if not zip_url:
                 raise Exception("No matching ZIP file found on GitHub.")
-
             # Download ZIP file
             self["status"].setText("Downloading settings from GitHub...")
             zip_path = os.path.join("/tmp", "latest.zip")
             zip_response = requests.get(zip_url)
             with open(zip_path, 'wb') as f:
                 f.write(zip_response.content)
-
             # Extract ZIP file
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 temp_extract_path = "/tmp/temp_extract"
                 if not os.path.exists(temp_extract_path):
                     os.makedirs(temp_extract_path)
                 zip_ref.extractall(temp_extract_path)
-
-                extracted_root = os.path.join(temp_extract_path,
-                                              os.listdir(temp_extract_path)[0])
+                extracted_root = os.path.join(temp_extract_path, os.listdir(temp_extract_path)[0])
                 if os.path.exists(TMP_DOWNLOAD):
                     shutil.rmtree(TMP_DOWNLOAD)
                 shutil.move(extracted_root, TMP_DOWNLOAD)
-
             self["status"].setText("Settings downloaded and extracted successfully.")
             self.parse_satellites()
         except Exception as e:
@@ -323,13 +307,24 @@ class CiefpSelectSatellite(Screen):
     def select_item(self):
         selected = self["left_list"].getCurrent()
         if selected:
-            if selected in self.selected_satellites:
-                self.selected_satellites.remove(selected)
-                print(f"[DEBUG] Uklonjen satelit: {selected}")
+            # Izdvoji numerički deo iz selektovanog satelita
+            numeric_selected = re.findall(r'\d+\.\d+[EW]', selected)
+            if numeric_selected:
+                numeric_selected = numeric_selected[0]
+                if numeric_selected in [re.findall(r'\d+\.\d+[EW]', sat)[0] for sat in self.selected_satellites if
+                                        re.findall(r'\d+\.\d+[EW]', sat)]:
+                    self.selected_satellites.remove(selected)
+                    print(f"[DEBUG] Uklonjen satelit: {selected}")
+                else:
+                    self.selected_satellites.append(selected)
+                    print(f"[DEBUG] Dodat satelit: {selected}")
             else:
-                self.selected_satellites.append(selected)
-                print(f"[DEBUG] Dodat satelit: {selected}")
-
+                if selected in self.selected_satellites:
+                    self.selected_satellites.remove(selected)
+                    print(f"[DEBUG] Uklonjen satelit: {selected}")
+                else:
+                    self.selected_satellites.append(selected)
+                    print(f"[DEBUG] Dodat satelit: {selected}")
             self["right_list"].setList(self.selected_satellites)
             print(f"[DEBUG] Trenutna lista satelita: {self.selected_satellites}")
 
@@ -351,7 +346,7 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.buket_docu.tv',
                 'userbouquet.buket_movie.tv',
                 'userbouquet.buket_music.tv',
-                'userbouquet.buket_news.tv',
+                'userbouquet.buket_uhd.tv',
                 'userbouquet.buket_adult.tv',
                 'userbouquet.buket_multistream.tv',
                 'userbouquet.buket_emu.tv',
@@ -400,8 +395,32 @@ class CiefpSelectSatellite(Screen):
                         else:
                             print(f"[WARNING] Fajl {bouquet_file} ne postoji u {TMP_DOWNLOAD}")
 
-            self["status"].setText("Files copied successfully!")
+            # Filtriraj tematske bukete prema selektovanim satelitima
+            theme_bouquets = [
+                'userbouquet.buket_exyu.tv',
+                'userbouquet.buket_sport.tv',
+                'userbouquet.buket_kids.tv',
+                'userbouquet.buket_docu.tv',
+                'userbouquet.buket_movie.tv',
+                'userbouquet.buket_music.tv',
+                'userbouquet.buket_uhd.tv',
+                'userbouquet.buket_adult.tv',
+                'userbouquet.buket_multistream.tv',
+                'userbouquet.buket_emu.tv'
+            ]
+            for theme_bouquet in theme_bouquets:
+                src = os.path.join(TMP_DOWNLOAD, theme_bouquet)
+                if os.path.exists(src):
+                    # Ekstrahuju se samo numerički delovi selektovanih satelita
+                    numeric_selected_satellites = [re.findall(r'\d+\.\d+[EW]', sat)[0] for sat in
+                                                   self.selected_satellites if re.findall(r'\d+\.\d+[EW]', sat)]
+                    if not self.filter_channels_by_satellite(os.path.join(TMP_SELECTED, theme_bouquet),
+                                                             numeric_selected_satellites):
+                        print(f"Failed to filter {theme_bouquet}. Keeping original content.")
+                else:
+                    print(f"[WARNING] Theme bouquet {theme_bouquet} does not exist in {TMP_DOWNLOAD}")
 
+            self["status"].setText("Files copied successfully!")
         except Exception as e:
             self["status"].setText(f"Copy error: {str(e)}")
 
@@ -525,7 +544,77 @@ class CiefpSelectSatellite(Screen):
 
         # Pozivanje funkcije sa odgovarajućim argumentima
         update_bouquets('/etc/enigma2/bouquets.tv', '/tmp/CiefpSelectSatellite')
-    
+
+    def filter_channels_by_satellite(self, filename, selected_satellites):
+        if not os.path.exists(filename):
+            print(f"File {filename} does not exist.")
+            return False
+
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+
+        filtered_lines = []
+        current_satellite = None
+        keep_lines = False
+        SAT_MARKER_REGEX = r'#SERVICE \d+:\d+:[\w\d]+:.*::\| (.+?) \|::'
+        NUMERIC_SAT_REGEX = r'(\d+\.\d+[EW])'
+
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()
+
+            # Dodaj prvu liniju (#NAME) bez uslova
+            if line.startswith('#NAME'):
+                filtered_lines.append(line)
+                print(f"Adding NAME line: {line}")
+                i += 1
+                continue
+
+            # Pronađi marker satelita ako postoji
+            if line.startswith('#SERVICE 1:64'):
+                match = re.search(SAT_MARKER_REGEX, line)
+                if match:
+                    satellite_name = match.group(1).strip()
+                    numeric_match = re.search(NUMERIC_SAT_REGEX, satellite_name)
+                    if numeric_match:
+                        numeric_satellite = numeric_match.group(1)
+                        print(f"Found satellite marker: {line}, Numeric Satellite: {numeric_satellite}")
+                        # Proveri da li je satelit jedan od onih koje tražimo
+                        keep_lines = any(sat in numeric_satellite for sat in selected_satellites)
+                        if keep_lines:
+                            current_satellite = numeric_satellite
+                            filtered_lines.append(line)
+                            print(f"Adding satellite marker: {line}")
+                            i += 1
+
+                            # Dodaj opis ako postoji
+                            if i < len(lines) and lines[i].startswith('#DESCRIPTION'):
+                                description_line = lines[i].strip()
+                                filtered_lines.append(description_line)
+                                print(f"Adding satellite description: {description_line}")
+                                i += 1
+
+                            # Kopiraj sve pripadajuće #SERVICE 1:0 linije dok ne naiđemo na sledeći #SERVICE 1:64
+                            while i < len(lines) and not lines[i].startswith('#SERVICE 1:64'):
+                                if lines[i].startswith('#SERVICE 1:0') or lines[i].startswith('#DESCRIPTION'):
+                                    filtered_lines.append(lines[i].strip())
+                                    print(f"Adding service line: {lines[i].strip()}")
+                                i += 1
+                            continue  # Preskoči na sledeći marker
+
+            i += 1
+
+        # Snimi ažurirani sadržaj natrag u fajl
+        if filtered_lines:
+            with open(filename, 'w') as f:
+                f.writelines([line + "\n" for line in filtered_lines])
+            print(f"Filtered {filename} for satellites: {', '.join(selected_satellites)}")
+        else:
+            print(f"No lines matched the selected satellites for {filename}. Keeping original content.")
+            return False
+
+        return True
+
     def install(self):
         self.session.openWithCallback(
             self.install_confirmed,
@@ -575,7 +664,6 @@ class CiefpSelectSatellite(Screen):
                 # 4. Reload Enigma2 nakon instalacije
                 self.reload_settings()
                 self["status"].setText("Instalacija uspešna!")
-
             except Exception as e:
                 self["status"].setText(f"Greška: {str(e)}")
 
@@ -622,10 +710,10 @@ class CiefpSelectSatellite(Screen):
 
     def exit(self):
         self.close()
-        
+
     def get_python_version(self):
         return f"Python {os.sys.version.split()[0]}"
-    
+
 def main(session, **kwargs):
     session.open(CiefpSelectSatellite)
 
