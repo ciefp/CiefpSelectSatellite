@@ -86,7 +86,7 @@ class CiefpSelectSatellite(Screen):
 
     def confirm_update(self):
         self.session.openWithCallback(self.prompt_update, MessageBox,
-                                      "Da li želite ažurirati plugin?",
+                                      "Do you want to update the plugin?",
                                       MessageBox.TYPE_YESNO)
 
     def prompt_update(self, answer):
