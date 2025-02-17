@@ -3,8 +3,8 @@ import re
 import sys
 import shutil
 import zipfile
-from xml.etree import ElementTree
 import requests
+from xml.etree import ElementTree
 from Components.Pixmap import Pixmap
 from Components.ActionMap import ActionMap
 from Components.Label import Label
@@ -13,9 +13,10 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Tools.Directories import fileExists
+from enigma import eConsoleAppContainer
 from enigma import eDVBDB
 
-PLUGIN_VERSION = "1.4"
+PLUGIN_VERSION = "1.5"
 PLUGIN_ICON = "plugin.png"
 PLUGIN_NAME = "CiefpSelectSatellite"
 PLUGIN_DESCRIPTION = "Satellite Selection Plugin"
@@ -24,17 +25,20 @@ TMP_SELECTED = "/tmp/CiefpSelectSatellite"
 GITHUB_API_URL = "https://api.github.com/repos/ciefp/ciefpsettings-enigma2-zipped/contents/"
 STATIC_NAMES = ["ciefp-E2-75E-34W"]
 
+
+UPDATE_COMMAND = "wget -q --no-check-certificate https://raw.githubusercontent.com/ciefp/CiefpSelectSatellite/main/installer.sh -O - | /bin/sh"
+
 class CiefpSelectSatellite(Screen):
     skin = """
-        <screen position="center,center" size="1200,600" title="..:: Ciefp Satellite Selector ::..">
+        <screen position="center,center" size="1400,600" title="..:: Ciefp Satellite Selector ::..    (Version {version}) ">
             <!-- Prvi deo (40%) - Lev lista -->
-            <widget name="left_list" position="0,0" size="480,500" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
+            <widget name="left_list" position="0,0" size="520,500" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
 
             <!-- Drugi deo (30%) - Desni lista -->
-            <widget name="right_list" position="500,0" size="360,500" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
+            <widget name="right_list" position="530,0" size="500,500" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
 
             <!-- Treći deo (30%) - Background -->
-            <widget name="background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/CiefpSelectSatellite/background.png" position="840,0" size="360,600" />
+            <widget name="background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/CiefpSelectSatellite/background.png" position="1040,0" size="360,600" />
 
             <!-- Status bar -->
             <widget name="status" position="0,510" size="840,50" font="Regular;24" />
@@ -43,9 +47,10 @@ class CiefpSelectSatellite(Screen):
             <widget name="green_button" position="0,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#1F771F" foregroundColor="#000000" />
             <widget name="yellow_button" position="170,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F9F13" foregroundColor="#000000" />
             <widget name="red_button" position="340,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F1313" foregroundColor="#000000" />
-            <widget name="python_version" position="510,550" size="200,40" font="Bold;28" halign="right" foregroundColor="#FFFFFF" />
+            <widget name="key_blue" position="500,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#13389F" foregroundColor="#000000" />
+            <widget name="version_info" position="680,550" size="350,40" font="Regular;20" foregroundColor="#FFFFFF" />
         </screen>
-    """
+    """.format(version=PLUGIN_VERSION)
     
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -61,7 +66,8 @@ class CiefpSelectSatellite(Screen):
         self["green_button"] = Label("Copy")
         self["yellow_button"] = Label("Install")
         self["red_button"] = Label("Exit")
-        self["python_version"] = Label(self.get_python_version())
+        self["key_blue"] = Label("Update")
+        self["version_info"] = Label("") 
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "DirectionActions"],
         {
             "ok": self.select_item,
@@ -69,12 +75,39 @@ class CiefpSelectSatellite(Screen):
             "green": self.copy_files,
             "yellow": self.install,
             "red": self.exit,
+            "blue": self.confirm_update,
             "up": self.up,
             "down": self.down,
             "left": self.switch_left,
             "right": self.switch_right,
         }, -1)
+        self.onLayoutFinish.append(self.fetch_version_info)
         self.download_settings()
+
+    def confirm_update(self):
+        self.session.openWithCallback(self.prompt_update, MessageBox,
+                                      "Da li želite ažurirati plugin?",
+                                      MessageBox.TYPE_YESNO)
+
+    def prompt_update(self, answer):
+        if answer:
+            self.update_plugin()
+
+    def update_plugin(self):
+        self["status"].setText("Updating plugin...")
+        self.container = eConsoleAppContainer()
+        self.container.appClosed.append(self.update_finished)
+        self.container.dataAvail.append(self.update_output)
+        self.container.execute(UPDATE_COMMAND)
+
+    def update_output(self, data):
+        self["status"].setText(self["status"].getText() + "\n" + data.decode("utf-8"))
+
+    def update_finished(self, retval):
+        if retval == 0:
+            self["status"].setText("The plugin has been successfully updated.")
+        else:
+            self["status"].setText("An error occurred while updating.")
 
     def create_bouquet_mapping(self):
         return {
@@ -241,6 +274,7 @@ class CiefpSelectSatellite(Screen):
             ]
         }
 
+
     def find_satellite_bouquet(self, naziv_satelita):
         match = re.search(r'(\d+\.\d+[EW])', naziv_satelita)
         if match:
@@ -306,6 +340,22 @@ class CiefpSelectSatellite(Screen):
             self.parse_satellites()
         except Exception as e:
             self["status"].setText(f"Error: {str(e)}")
+
+    def fetch_version_info(self):
+        try:
+            response = requests.get(GITHUB_API_URL)
+            response.raise_for_status()
+            files = response.json()
+
+            for file in files:
+                if any(name in file["name"] for name in STATIC_NAMES) and file["name"].endswith(".zip"):
+                    version_with_date = file["name"].replace(".zip", "")
+                    self["version_info"].setText(f"({version_with_date})")
+                    return
+
+            self["version_info"].setText(f"(Date not available)")
+        except Exception as e:
+            self["version_info"].setText(f"(Error fetching date)")
 
     def select_item(self):
         selected = self["left_list"].getCurrent()
@@ -713,9 +763,6 @@ class CiefpSelectSatellite(Screen):
 
     def exit(self):
         self.close()
-
-    def get_python_version(self):
-        return f"Python {os.sys.version.split()[0]}"
 
 def main(session, **kwargs):
     session.open(CiefpSelectSatellite)
