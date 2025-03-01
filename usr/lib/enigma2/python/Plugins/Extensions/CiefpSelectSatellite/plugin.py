@@ -16,7 +16,7 @@ from Tools.Directories import fileExists
 from enigma import eConsoleAppContainer
 from enigma import eDVBDB
 
-PLUGIN_VERSION = "1.5"
+PLUGIN_VERSION = "1.6"
 PLUGIN_ICON = "plugin.png"
 PLUGIN_NAME = "CiefpSelectSatellite"
 PLUGIN_DESCRIPTION = "Satellite Selection Plugin"
@@ -30,25 +30,25 @@ UPDATE_COMMAND = "wget -q --no-check-certificate https://raw.githubusercontent.c
 
 class CiefpSelectSatellite(Screen):
     skin = """
-        <screen position="center,center" size="1400,600" title="..:: Ciefp Satellite Selector ::..    (Version {version}) ">
+        <screen position="center,center" size="1400,800" title="..:: Ciefp Satellite Selector ::..    (Version {version}) ">
             <!-- Prvi deo (40%) - Lev lista -->
-            <widget name="left_list" position="0,0" size="520,500" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
+            <widget name="left_list" position="0,0" size="520,700" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
 
             <!-- Drugi deo (30%) - Desni lista -->
-            <widget name="right_list" position="530,0" size="500,500" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
+            <widget name="right_list" position="530,0" size="500,700" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
 
             <!-- Treći deo (30%) - Background -->
-            <widget name="background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/CiefpSelectSatellite/background.png" position="1040,0" size="360,600" />
+            <widget name="background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/CiefpSelectSatellite/background.png" position="1040,0" size="360,800" />
 
             <!-- Status bar -->
-            <widget name="status" position="0,510" size="840,50" font="Regular;24" />
+            <widget name="status" position="0,710" size="840,50" font="Regular;24" />
 
             <!-- Dugmad na dnu -->
-            <widget name="green_button" position="0,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#1F771F" foregroundColor="#000000" />
-            <widget name="yellow_button" position="170,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F9F13" foregroundColor="#000000" />
-            <widget name="red_button" position="340,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F1313" foregroundColor="#000000" />
-            <widget name="key_blue" position="500,550" size="150,35" font="Bold;28" halign="center" backgroundColor="#13389F" foregroundColor="#000000" />
-            <widget name="version_info" position="680,550" size="350,40" font="Regular;20" foregroundColor="#FFFFFF" />
+            <widget name="green_button" position="0,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#1F771F" foregroundColor="#000000" />
+            <widget name="yellow_button" position="170,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F9F13" foregroundColor="#000000" />
+            <widget name="red_button" position="340,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F1313" foregroundColor="#000000" />
+            <widget name="key_blue" position="500,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#13389F" foregroundColor="#000000" />
+            <widget name="version_info" position="680,750" size="350,40" font="Regular;20" foregroundColor="#FFFFFF" />
         </screen>
     """.format(version=PLUGIN_VERSION)
     
