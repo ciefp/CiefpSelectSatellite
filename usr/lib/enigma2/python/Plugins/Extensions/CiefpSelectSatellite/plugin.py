@@ -16,7 +16,7 @@ from Tools.Directories import fileExists
 from enigma import eConsoleAppContainer
 from enigma import eDVBDB
 
-PLUGIN_VERSION = "1.6"
+PLUGIN_VERSION = "1.7"
 PLUGIN_ICON = "plugin.png"
 PLUGIN_NAME = "CiefpSelectSatellite"
 PLUGIN_DESCRIPTION = "Satellite Selection Plugin"
@@ -30,23 +30,23 @@ UPDATE_COMMAND = "wget -q --no-check-certificate https://raw.githubusercontent.c
 
 class CiefpSelectSatellite(Screen):
     skin = """
-        <screen position="center,center" size="1400,800" title="..:: Ciefp Satellite Selector ::..    (Version {version}) ">
-            <!-- Prvi deo (40%) - Lev lista -->
-            <widget name="left_list" position="0,0" size="520,700" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
+        <screen position="center,center" size="1600,800" title="..:: Ciefp Satellite Selector ::..    (Version {version}) ">
+            <!-- Prvi deo - Levi lista -->
+            <widget name="left_list" position="0,0" size="620,700" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
 
-            <!-- Drugi deo (30%) - Desni lista -->
-            <widget name="right_list" position="530,0" size="500,700" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
+            <!-- Drugi deo - Desni lista -->
+            <widget name="right_list" position="630,0" size="600,700" scrollbarMode="showOnDemand" itemHeight="33" font="Regular;28" />
 
-            <!-- Treći deo (30%) - Background -->
-            <widget name="background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/CiefpSelectSatellite/background.png" position="1040,0" size="360,800" />
+            <!-- Treći deo - Background -->
+            <widget name="background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/CiefpSelectSatellite/background.png" position="1240,0" size="360,800" />
 
             <!-- Status bar -->
             <widget name="status" position="0,710" size="840,50" font="Regular;24" />
 
             <!-- Dugmad na dnu -->
-            <widget name="green_button" position="0,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#1F771F" foregroundColor="#000000" />
-            <widget name="yellow_button" position="170,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F9F13" foregroundColor="#000000" />
-            <widget name="red_button" position="340,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F1313" foregroundColor="#000000" />
+            <widget name="red_button" position="0,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F1313" foregroundColor="#000000" />
+            <widget name="green_button" position="170,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#1F771F" foregroundColor="#000000" />
+            <widget name="yellow_button" position="340,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#9F9F13" foregroundColor="#000000" />
             <widget name="key_blue" position="500,750" size="150,35" font="Bold;28" halign="center" backgroundColor="#13389F" foregroundColor="#000000" />
             <widget name="version_info" position="680,750" size="350,40" font="Regular;20" foregroundColor="#FFFFFF" />
         </screen>
@@ -246,10 +246,7 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.ciefp_08w_digitv.tv',
                 'userbouquet.ciefp_08w_slovaktelekom.tv'
             ],
-            '4.0W': [
-                'userbouquet.ciefp_4w_amos.tv',
-                'userbouquet.ciefp_4w_thome.tv'
-            ],
+            '4.0W': ['userbouquet.ciefp_4w_amos.tv'],
             '5.0W': [
                 'userbouquet.ciefp_5w_eutelsat.tv',
                 'userbouquet.ciefp_5w_rai.tv',
@@ -416,7 +413,6 @@ class CiefpSelectSatellite(Screen):
                 'userbouquet.ciefpsettings_iptv_movies.tv',
                 'userbouquet.ciefpsettings_iptv_movies2.tv',
                 'userbouquet.link_0_marker.tv',
-                'userbouquet.link_2.tv',
                 'userbouquet.link_5.tv',
                 'userbouquet.link_3.tv',
                 'userbouquet.LastScanned.tv',
