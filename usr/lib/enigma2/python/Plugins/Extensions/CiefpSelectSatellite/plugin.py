@@ -16,7 +16,7 @@ from Tools.Directories import fileExists
 from enigma import eConsoleAppContainer
 from enigma import eDVBDB
 
-PLUGIN_VERSION = "1.7"
+PLUGIN_VERSION = "1.8"
 PLUGIN_ICON = "plugin.png"
 PLUGIN_NAME = "CiefpSelectSatellite"
 PLUGIN_DESCRIPTION = "Satellite Selection Plugin"
